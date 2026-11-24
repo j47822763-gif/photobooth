@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTRLZi Photobooth Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">C</div><div><strong>CTRLZi</strong><small>PHOTOBOOTH STUDIO</small></div></div>
+    <div class="top-actions">
+      <span class="save-state" id="saveState">Ready</span>
+      <button class="btn ghost" id="newTemplateBtn">New design</button>
+      <button class="btn secondary" id="saveBtn">Save template</button>
+      <button class="btn primary" id="exportBtn">Export PNG</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="left-panel">
+      <div class="panel-heading"><span>DESIGN TOOLS</span><span class="dot"></span></div>
+      <section class="tool-section">
+        <h3>Canvas format</h3>
+        <label for="formatSelect">Print size</label>
+        <select id="formatSelect">
+          <option value="2x6">2 × 6 in · Photo strip</option>
+          <option value="4x6">4 × 6 in · Postcard</option>
+          <option value="custom">Custom dimensions</option>
+        </select>
+        <div class="two-fields">
+          <div><label for="widthInput">Width (in)</label><input id="widthInput" type="number" min="1" max="12" step=".1" value="2"></div>
+          <div><label for="heightInput">Height (in)</label><input id="heightInput" type="number" min="1" max="18" step=".1" value="6"></div>
+        </div>
+        <p class="hint">Export uses 300 DPI for print-quality output.</p>
+      </section>
+
+      <section class="tool-section">
+        <h3>Quick templates</h3>
+        <div class="template-grid">
+          <button class="template-card active" data-template="strip"><span class="mini-strip"><i></i><i></i><i></i><i></i></span><b>Classic strip</b></button>
+          <button class="template-card" data-template="two"><span class="mini-two"><i></i><i></i></span><b>Double panel</b></button>
+          <button class="template-card" data-template="collage"><span class="mini-collage"><i></i><i></i><i></i><i></i></span><b>4-photo grid</b></button>
+          <button class="template-card" data-template="single"><span class="mini-single"><i></i></span><b>Single photo</b></button>
+        </div>
+      </section>
+
+      <section class="tool-section">
+        <h3>Add elements</h3>
+        <div class="button-stack">
+          <button class="tool-button" id="addPhotoBtn"><span>▧</span> Add photo frame</button>
+          <button class="tool-button" id="addTextBtn"><span>T</span> Add text</button>
+          <label class="tool-button file-button"><span>▨</span> Upload background<input type="file" id="backgroundUpload" accept="image/*"></label>
+          <label class="tool-button file-button"><span>＋</span> Upload logo / overlay<input type="file" id="logoUpload" accept="image/*"></label>
+        </div>
+      </section>
+
+      <section class="tool-section">
+        <h3>Background</h3>
+        <label for="bgColor">Background color</label>
+        <input type="color" id="bgColor" value="#ffffff" class="color-input">
+        <button class="text-button" id="clearBackgroundBtn">Remove background image</button>
+      </section>
+
+      <section class="tool-section">
+        <h3>Saved designs</h3>
+        <div id="savedTemplates" class="saved-list"><p class="empty">No saved templates yet.</p></div>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <div class="workspace-toolbar">
+        <div><strong>Design workspace</strong><small>Choose an element on the canvas to edit it.</small></div>
+        <div class="zoom-controls"><button id="zoomOut">−</button><span id="zoomLabel">100%</span><button id="zoomIn">+</button><button id="fitBtn">Fit</button></div>
+      </div>
+      <div class="canvas-area" id="canvasArea">
+        <div class="canvas-wrap" id="canvasWrap">
+          <div id="designCanvas" class="design-canvas">
+            <div class="canvas-background" id="canvasBackground"></div>
+            <div class="canvas-elements" id="canvasElements"></div>
+          </div>
+        </div>
+      </div>
+      <div class="workspace-footer"><span id="canvasDimensions">2 × 6 inches</span><span>300 DPI export · PNG</span></div>
+    </section>
+
+    <aside class="right-panel">
+      <div class="panel-heading"><span>PROPERTIES</span><span class="selection-tag" id="selectionTag">No selection</span></div>
+      <div id="emptyProperties" class="properties-empty"><div class="empty-icon">✦</div><b>Select an element</b><p>Click a photo frame, text, or logo on the canvas to edit its properties.</p></div>
+      <div id="elementProperties" class="property-content hidden">
+        <div class="property-group">
+          <label>Element name</label><input id="propName" type="text">
+        </div>
+        <div class="property-group" id="textProperty">
+          <label>Text content</label><textarea id="propText" rows="3"></textarea>
+          <label>Text color</label><input type="color" id="propTextColor" value="#242424" class="color-input">
+          <label>Font style</label>
+          <select id="propFontFamily">
+            <option value="Manrope">Manrope</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Impact">Impact</option>
+            <option value="Trebuchet MS">Trebuchet MS</option>
+            <option value="Brush Script MT">Brush Script</option>
+          </select>
+          <label>Font weight</label>
+          <select id="propFontWeight">
+            <option value="400">Regular</option>
+            <option value="600">Semi-bold</option>
+            <option value="700">Bold</option>
+            <option value="800">Extra-bold</option>
+          </select>
+          <label>Font size</label><input type="number" id="propFontSize" min="8" max="120" value="24">
+        </div>
+        <div class="property-group" id="photoProperty">
+          <label>Photo image</label><label class="upload-inline">Choose image<input type="file" id="photoUpload" accept="image/*"></label>
+          <label>Frame fill</label><input type="color" id="propFill" value="#e9e9ee" class="color-input">
+          <label>Fit</label><select id="propFit"><option value="cover">Fill frame</option><option value="contain">Fit entire image</option></select>
+        </div>
+        <div class="property-group">
+          <div class="two-fields">
+            <div><label>X position</label><input type="number" id="propX"></div>
+            <div><label>Y position</label><input type="number" id="propY"></div>
+          </div>
+          <div class="two-fields">
+            <div><label>Width</label><input type="number" id="propW" min="10"></div>
+            <div><label>Height</label><input type="number" id="propH" min="10"></div>
+          </div>
+          <label>Rotation</label><input type="number" id="propRotation" min="-180" max="180" value="0">
+        </div>
+        <div class="property-actions"><button class="btn secondary" id="duplicateBtn">Duplicate</button><button class="btn danger" id="deleteBtn">Delete element</button></div>
+      </div>
+      <div class="camera-box">
+        <div class="camera-heading"><div><b>Camera booth</b><small>Capture photos from your webcam</small></div><span class="camera-live" id="cameraStatus">OFFLINE</span></div>
+        <video id="cameraVideo" autoplay playsinline muted></video>
+        <div class="camera-actions"><button class="btn secondary" id="startCameraBtn">Start camera</button><button class="btn primary" id="captureBtn" disabled>Capture</button></div>
+        <div class="camera-actions"><button class="btn ghost" id="stopCameraBtn" disabled>Stop camera</button><button class="btn ghost" id="countdownBtn">3s countdown</button></div>
+        <p class="hint" id="cameraMessage">Camera access requires localhost or HTTPS.</p>
+      </div>
+    </aside>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
